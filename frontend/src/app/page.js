@@ -101,7 +101,7 @@ export default function Home() {
           <p>{data.answer}</p>
         </div>
       )}
-      {data?.result?.length > 0 && <ChartView data={data} />}
+      {/* {data?.result?.length > 0 && <ChartView data={data} />} */}
       {data?.result?.length > 0 && (
         <button
           onClick={downloadCSV}
