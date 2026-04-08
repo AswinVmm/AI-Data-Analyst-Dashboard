@@ -26,7 +26,9 @@ router.post("/", async (req, res) => {
     Understand the user query and convert it into structured JSON.
 
     Rules:
-    - Use ONLY exact column names
+    - You can also create derived fields using operations like:
+        stock * price = total_value
+        If user asks "stock value", interpret it as stock * price.
     - If question mentions "female/male", use "gender" column with filter
     - If asking "top", include limit
     - Prefer aggregation = count when counting people
