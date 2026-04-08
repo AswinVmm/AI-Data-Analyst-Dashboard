@@ -68,7 +68,13 @@ function processData(data, config) {
         if (aggregation === "count") {
             value = 1;
         } else {
-            value = parseFloat(row[yCol]);
+            let raw = row[yCol];
+
+            // remove currency symbols, commas, spaces
+            let cleaned = String(raw).replace(/[^0-9.-]+/g, "");
+
+            value = parseFloat(cleaned);
+
             if (isNaN(value)) value = 0;
         }
 
