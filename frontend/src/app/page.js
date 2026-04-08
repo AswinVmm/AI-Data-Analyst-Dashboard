@@ -43,6 +43,7 @@ export default function Home() {
     setData(res.data);
 
     setLoading(false);
+    setQuestion(""); // clear input
   };
 
   const downloadCSV = () => {
@@ -76,7 +77,11 @@ export default function Home() {
               {msg.text}
             </div>
 
-            {msg.data?.result && <ChartView data={msg.data} />}
+            {msg.data?.result && (
+              <div className="mt-2">
+                <ChartView data={msg.data} />
+              </div>
+            )}
           </div>
         ))}
 
@@ -101,7 +106,6 @@ export default function Home() {
           <p>{data.answer}</p>
         </div>
       )}
-      {/* {data?.result?.length > 0 && <ChartView data={data} />} */}
       {data?.result?.length > 0 && (
         <button
           onClick={downloadCSV}

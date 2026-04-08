@@ -22,7 +22,7 @@ export default function ChartView({ data }) {
                         <Cell key={index} fill={COLORS[index % COLORS.length]} />
                     ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip contentStyle={{ backgroundColor: "#fff", borderRadius: "8px" }} />
                 <Legend />
             </PieChart>
         );
@@ -31,10 +31,10 @@ export default function ChartView({ data }) {
     if (data.type === "bar") {
         return (
             <BarChart width={500} height={300} data={data.result}>
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="value" />
+                <XAxis dataKey="name" stroke="#555" />
+                <YAxis stroke="#555" />
+                <Tooltip contentStyle={{ backgroundColor: "#fff", borderRadius: "8px" }} />
+                <Bar dataKey="value" fill="#3b82f6" />
             </BarChart>
         );
     }
@@ -43,10 +43,10 @@ export default function ChartView({ data }) {
     if (data.type === "line") {
         return (
             <LineChart width={500} height={300} data={data.result}>
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Line type="monotone" dataKey="value" />
+                <XAxis dataKey="name" stroke="#555" />
+                <YAxis stroke="#555" />
+                <Tooltip contentStyle={{ backgroundColor: "#fff", borderRadius: "8px" }} />
+                <Line type="monotone" dataKey="value" stroke="#10b981" strokeWidth={2} />
             </LineChart>
         );
     }
