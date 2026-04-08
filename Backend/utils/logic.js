@@ -31,6 +31,8 @@ function processData(data, config) {
 
     const columns = Object.keys(data[0] || {});
 
+    const isStockValue = y === "stock_value";
+
     const xCol = findColumn(columns, x);
     const yCol = isStockValue ? "stock_value" : findColumn(columns, y);
 
@@ -43,13 +45,15 @@ function processData(data, config) {
     let filteredData = data;
 
     // ✅ DERIVED FIELD: stock_value
-    const isStockValue = y === "stock_value";
+    // const isStockValue = y === "stock_value";
 
     filteredData = filteredData.map((row) => {
         if (isStockValue) {
-            const stock = parseFloat(String(row["stock"]).replace(/[^0-9.-]+/g, ""));
-            const price = parseFloat(String(row["price"]).replace(/[^0-9.-]+/g, ""));
+            const stockCol = findColumn(columns, "stock");
+            const priceCol = findColumn(columns, "price");
 
+            const stock = parseFloat(String(row[stockCol]).replace(/[^0-9.-]+/g, ""));
+            const price = parseFloat(String(row[priceCol]).replace(/[^0-9.-]+/g, ""));
             return {
                 ...row,
                 stock_value: stock * price,
