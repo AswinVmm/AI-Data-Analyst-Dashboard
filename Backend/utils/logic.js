@@ -36,7 +36,8 @@ function processData(data, config) {
 
     // ❌ prevent crash
     if (!xCol || (aggregation !== "count" && !yCol)) {
-        throw new Error("AI selected invalid columns");
+        // throw new Error("AI selected invalid columns");
+        return [];
     }
 
     let filteredData = data;

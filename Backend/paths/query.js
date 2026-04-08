@@ -30,6 +30,7 @@ router.post("/", async (req, res) => {
     - If question mentions "female/male", use "gender" column with filter
     - If asking "top", include limit
     - Prefer aggregation = count when counting people
+    - If user asks general analysis:do not return chart ,only return answer text
 
     Return JSON:
      {
@@ -59,22 +60,41 @@ router.post("/", async (req, res) => {
 
     const cleanJSON = text.slice(jsonStart, jsonEnd);
 
-    const parsed = JSON.parse(cleanJSON);
+    let parsed;
+
+    try {
+      parsed = JSON.parse(cleanJSON);
+    } catch (e) {
+      return res.json({
+        type: "error",
+        result: [],
+        answer: "AI response parsing failed. Try rephrasing.",
+      });
+    }
+    // const parsed = JSON.parse(cleanJSON);
     // const aiResponse = JSON.parse(response.choices[0].message.content);
+
+    if (!parsed.chart?.x || !parsed.chart?.type) {
+      return res.json({
+        type: "text",
+        result: [],
+        answer: parsed.answer || "Here is the analysis of your data.",
+      });
+    }
 
     const validColumns = Object.keys(csvData[0] || {});
 
     // Validate x and y
-    if (
-      !validColumns.includes(parsed.chart.x) ||
-      !validColumns.includes(parsed.chart.y)
-    ) {
-      return res.json({
-        type: "bar",
-        result: [],
-        answer: "AI selected invalid columns. Please try another question.",
-      });
-    }
+    // if (
+    //   !validColumns.includes(parsed.chart.x) ||
+    //   !validColumns.includes(parsed.chart.y)
+    // ) {
+    //   return res.json({
+    //     type: "bar",
+    //     result: [],
+    //     answer: "AI selected invalid columns. Please try another question.",
+    //   });
+    // }
 
     const processed = processData(csvData, parsed.chart);
     const insight = generateInsight(processed, question);
