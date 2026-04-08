@@ -9,13 +9,32 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
+// ✅ Retry wrapper for Gemini
+async function callGeminiWithRetry(prompt, retries = 3) {
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+    });
+    return response.text;
+  } catch (err) {
+    if (retries > 0) {
+      console.log("Retrying Gemini... Attempts left:", retries);
+      await new Promise((res) => setTimeout(res, 1000));
+      return callGeminiWithRetry(prompt, retries - 1);
+    }
+    throw err;
+  }
+}
+
 router.post("/", async (req, res) => {
   try {
     console.log("Request received");
     const { question } = req.body;
 
     const file = fs.readFileSync("./uploads/latest.csv", "utf8");
-    const csvData = Papa.parse(file, { header: true }).data;
+    const csvData = Papa.parse(file, { header: true }).data
+      .filter(row => Object.values(row).some(val => val !== ""));
     const columns = Object.keys(csvData[0] || {}).join(", ");
 
     const prompt = `
@@ -50,12 +69,7 @@ router.post("/", async (req, res) => {
       }
       Question: "${question}"
       `;
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-    });
-
-    const text = response.text;
+    const text = await callGeminiWithRetry(prompt);
     console.log("Gemini response:", text);
 
     // ⚠️ Clean response (Gemini sometimes adds extra text)
@@ -153,8 +167,26 @@ router.post("/", async (req, res) => {
       answer: insight,
     });
   } catch (err) {
-    console.error("ERROR:", err.message);
-    res.status(500).json({ error: err.message });
+    console.error("FULL ERROR:", err);
+
+    // ✅ Handle Gemini overload
+    if (
+      err.message?.includes("503") ||
+      err.message?.includes("UNAVAILABLE")
+    ) {
+      return res.json({
+        type: "text",
+        result: [],
+        answer: "⚠️ AI service is busy. Please try again in a few seconds.",
+      });
+    }
+
+    // ✅ Generic fallback
+    res.status(500).json({
+      type: "text",
+      result: [],
+      answer: "Something went wrong. Try again.",
+    });
   }
 });
 
