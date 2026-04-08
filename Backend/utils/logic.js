@@ -32,7 +32,7 @@ function processData(data, config) {
     const columns = Object.keys(data[0] || {});
 
     const xCol = findColumn(columns, x);
-    const yCol = findColumn(columns, y);
+    const yCol = isStockValue ? "stock_value" : findColumn(columns, y);
 
     // ❌ prevent crash
     if (!xCol || (aggregation !== "count" && !yCol)) {
@@ -42,9 +42,25 @@ function processData(data, config) {
 
     let filteredData = data;
 
+    // ✅ DERIVED FIELD: stock_value
+    const isStockValue = y === "stock_value";
+
+    filteredData = filteredData.map((row) => {
+        if (isStockValue) {
+            const stock = parseFloat(String(row["stock"]).replace(/[^0-9.-]+/g, ""));
+            const price = parseFloat(String(row["price"]).replace(/[^0-9.-]+/g, ""));
+
+            return {
+                ...row,
+                stock_value: stock * price,
+            };
+        }
+        return row;
+    });
+
     // ✅ FILTER
     if (filter) {
-        filteredData = data.filter((row) => {
+        filteredData = filteredData.filter((row) => {
             return Object.keys(filter).every((key) => {
                 const realKey = findColumn(columns, key);
                 if (!realKey) return false;

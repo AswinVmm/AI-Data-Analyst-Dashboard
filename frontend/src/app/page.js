@@ -77,7 +77,7 @@ export default function Home() {
               {msg.text}
             </div>
 
-            {msg.data?.result && (
+            {msg.data?.result?.length > 0 && (
               <div className="mt-2">
                 <ChartView data={msg.data} />
               </div>
@@ -95,6 +95,7 @@ export default function Home() {
         className="border p-2 w-full mt-4"
         // type="text"
         placeholder="Ask a question..."
+        value={question}
         onChange={(e) => setQuestion(e.target.value)}
       />
       <button onClick={askQuestion} className="mt-2 px-4 py-2 bg-green-500 text-white rounded">

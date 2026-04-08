@@ -26,13 +26,15 @@ router.post("/", async (req, res) => {
     Understand the user query and convert it into structured JSON.
 
     Rules:
-    - You can also create derived fields using operations like:
-        stock * price = total_value
-        If user asks "stock value", interpret it as stock * price.
-    - If question mentions "female/male", use "gender" column with filter
-    - If asking "top", include limit
+    - ALWAYS return a chart if the query includes avg, sum, count, top, etc.
+    - ALWAYS provide an "x" column for grouping (choose a relevant column like product/name/category if not specified)
+    - You can create derived fields:
+        stock * price = stock_value
+    - If user asks "stock value", interpret it as stock * price
+    - If question mentions "female/male", use gender column with filter
+    - Only return text-only response if user explicitly asks for explanation or insights without chart
     - Prefer aggregation = count when counting people
-    - If user asks general analysis:do not return chart ,only return answer text
+    
 
     Return JSON:
      {
@@ -73,8 +75,52 @@ router.post("/", async (req, res) => {
         answer: "AI response parsing failed. Try rephrasing.",
       });
     }
+
+    // ✅ HANDLE direct average (no grouping)
+    if (parsed.chart?.aggregation === "avg" && !parsed.chart?.x) {
+      const values = csvData
+        .map((row) => {
+          if (parsed.chart.y === "stock_value") {
+            const stock = parseFloat(row.stock);
+            const price = parseFloat(row.price);
+            return stock * price;
+          }
+          return parseFloat(row[parsed.chart.y]);
+        })
+        .filter((v) => !isNaN(v));
+
+      if (values.length === 0) {
+        return res.json({
+          type: "text",
+          result: [],
+          answer: "No valid numeric data found.",
+        });
+      }
+
+      const avg =
+        values.reduce((a, b) => a + b, 0) / values.length;
+
+      return res.json({
+        type: "text",
+        result: [],
+        answer: `Average ${parsed.chart.y} is ${avg.toFixed(2)}`,
+      });
+    }
+
+    // ✅ AUTO FIX: if AI misses x, pick first column
+    if (!parsed.chart?.x && parsed.chart?.y) {
+      const cols = Object.keys(csvData[0] || {});
+      parsed.chart.x = cols[0]; // default grouping
+    }
     // const parsed = JSON.parse(cleanJSON);
     // const aiResponse = JSON.parse(response.choices[0].message.content);
+
+    // if (!parsed.chart?.x && parsed.chart?.y && parsed.chart?.aggregation) {
+    //   const columns = Object.keys(csvData[0] || {});
+
+    //   // pick a default grouping column
+    //   parsed.chart.x = columns[0]; // e.g. product/name
+    // }
 
     if (!parsed.chart?.x || !parsed.chart?.type) {
       return res.json({
