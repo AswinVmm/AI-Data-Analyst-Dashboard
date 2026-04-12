@@ -16,6 +16,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [chartType, setChartType] = useState("bar");
   const [darkMode, setDarkMode] = useState(false);
+  const latestData = messages[messages.length - 1]?.data;
+  const values = latestData?.result?.map((r) => Number(r.value) || 0) || [];
 
   const uploadFile = async () => {
     const formData = new FormData();
@@ -210,13 +212,13 @@ export default function Home() {
             </div>
           </CardContent>
         </Card>
-
-        {data?.result?.length > 0 && (
+                //KPI
+        {values.length > 0 && (
           <div className="grid grid-cols-3 gap-4">
             <div className="p-4 bg-blue-100 dark:bg-blue-900 rounded">
               <h3 className="text-sm">Total</h3>
               <p className="text-xl font-bold">
-                {data.result.reduce((a, b) => a + b.value, 0)}
+                {values.reduce((a, b) => a + b, 0)}
               </p>
             </div>
 
@@ -224,8 +226,8 @@ export default function Home() {
               <h3 className="text-sm">Average</h3>
               <p className="text-xl font-bold">
                 {(
-                  data.result.reduce((a, b) => a + b.value, 0) /
-                  data.result.length
+                  values.reduce((a, b) => a + b, 0) /
+                  values.length
                 ).toFixed(2)}
               </p>
             </div>
@@ -233,7 +235,7 @@ export default function Home() {
             <div className="p-4 bg-purple-100 dark:bg-purple-900 rounded">
               <h3 className="text-sm">Max</h3>
               <p className="text-xl font-bold">
-                {Math.max(...data.result.map((r) => r.value))}
+                {Math.max(...values)}
               </p>
             </div>
           </div>
