@@ -46,6 +46,38 @@ export default function Home() {
     setQuestion(""); // clear input
   };
 
+  const analyzeData = async () => {
+    setLoading(true);
+
+    const userMsg = { role: "user", text: "Analyze this dataset" };
+    setMessages((prev) => [...prev, userMsg]);
+
+    try {
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/query`,
+        {
+          question: "Give a full analysis of this dataset with insights",
+        }
+      );
+
+      const botMsg = {
+        role: "bot",
+        text: res.data.answer,
+        data: res.data,
+      };
+
+      setMessages((prev) => [...prev, botMsg]);
+      setData(res.data);
+    } catch (err) {
+      setMessages((prev) => [
+        ...prev,
+        { role: "bot", text: "⚠️ Failed to analyze data. Try again." },
+      ]);
+    }
+
+    setLoading(false);
+  };
+
   const downloadCSV = () => {
     if (!data?.result) return;
 
@@ -88,8 +120,26 @@ export default function Home() {
         {loading && <p>Thinking... 🤖</p>}
       </div>
 
+      {/* <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+      <button onClick={uploadFile}>Upload</button> */}
+
       <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-      <button onClick={uploadFile}>Upload</button>
+
+      <div className="flex gap-2 mt-2">
+        <button
+          onClick={uploadFile}
+          className="px-4 py-2 bg-blue-500 text-white rounded"
+        >
+          Upload
+        </button>
+
+        <button
+          onClick={analyzeData}
+          className="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded shadow"
+        >
+          Analyze
+        </button>
+      </div>
 
       <input
         className="border p-2 w-full mt-4"

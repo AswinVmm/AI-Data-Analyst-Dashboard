@@ -53,6 +53,7 @@ router.post("/", async (req, res) => {
     - If question mentions "female/male", use gender column with filter
     - Only return text-only response if user explicitly asks for explanation or insights without chart
     - Prefer aggregation = count when counting people
+    - If user asks for "analyze dataset" or "full analysis": Return summary insights (text) AND include a useful chart (top categories, distribution, etc.)
     
 
     Return JSON:
