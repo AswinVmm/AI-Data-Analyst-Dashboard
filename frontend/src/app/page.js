@@ -106,161 +106,159 @@ export default function Home() {
   };
 
   return (
-    <div className={darkMode ? "dark p-6 max-w-4xl mx-auto space-y-4 bg-black text-white" : "p-6 max-w-4xl mx-auto space-y-4"}>
-      <div className="p-6 max-w-4xl mx-auto space-y-4">
-        <h1 className="text-3xl font-bold text-center">📊 AI Data Analyst</h1>
-        <button
-          onClick={() => setDarkMode(!darkMode)}
-          className="px-3 py-1 rounded bg-gray-800 text-white dark:bg-white dark:text-black"
-        >
-          {darkMode ? "☀ Light" : "🌙 Dark"}
-        </button>
+    <div className="p-6 max-w-4xl mx-auto space-y-4">
+      <h1 className="text-3xl font-bold text-center">📊 AI Data Analyst</h1>
+      <button
+        onClick={() => setDarkMode(!darkMode)}
+        className="px-3 py-1 rounded bg-gray-800 text-white dark:bg-white dark:text-black"
+      >
+        {darkMode ? "☀ Light" : "🌙 Dark"}
+      </button>
 
-        {/* 📁 Upload Section */}
-        <Card className="p-4">
-          <CardContent className="space-y-3">
-            <Input
-              type="file"
-              onChange={(e) => setFile(e.target.files[0])}
-            />
+      {/* 📁 Upload Section */}
+      <Card className="p-4">
+        <CardContent className="space-y-3">
+          <Input
+            type="file"
+            onChange={(e) => setFile(e.target.files[0])}
+          />
 
-            <div className="flex gap-2">
-              <Button onClick={uploadFile}>Upload</Button>
-
-              <Button
-                onClick={analyzeData}
-                className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white"
-              >
-                Analyze 📊
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 💬 Chat Section */}
-        <Card>
-          <CardContent>
-            <ScrollArea className="h-96 pr-4">
-              <div className="space-y-3">
-                {messages.map((msg, i) => (
-                  <div
-                    key={i}
-                    className={`flex ${msg.role === "user"
-                      ? "justify-end"
-                      : "justify-start"
-                      }`}
-                  >
-                    <div
-                      className={`px-4 py-2 rounded-2xl max-w-xs shadow ${msg.role === "user"
-                        ? "bg-blue-500 text-white"
-                        : "bg-gray-200"
-                        }`}
-                    >
-                      {msg.text}
-
-                      {msg.data?.result?.length > 0 && (
-                        <div className="mt-3">
-                          <ChartView data={{ ...msg.data, type: chartType }} />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-
-                {loading && (
-                  <p className="text-center text-gray-500">
-                    Thinking... 🤖
-                  </p>
-                )}
-              </div>
-            </ScrollArea>
-          </CardContent>
-        </Card>
-
-        {/* ❓ Ask Section */}
-        <Card className="p-4">
-          <CardContent className="space-y-2">
-            <Input
-              placeholder="Ask a question..."
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") askQuestion();
-              }}
-            />
+          <div className="flex gap-2">
+            <Button onClick={uploadFile}>Upload</Button>
 
             <Button
-              onClick={askQuestion}
-              className="w-full bg-green-500 text-white"
-              disabled={loading}
+              onClick={analyzeData}
+              className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white"
             >
-              Ask
+              Analyze 📊
             </Button>
-            <div className="flex gap-2 mt-2">
-              {["bar", "line", "pie"].map((type) => (
-                <button
-                  key={type}
-                  onClick={() => setChartType(type)}
-                  className={`px-3 py-1 rounded ${chartType === type
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 dark:bg-gray-700"
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 💬 Chat Section */}
+      <Card>
+        <CardContent>
+          <ScrollArea className="h-96 pr-4">
+            <div className="space-y-3">
+              {messages.map((msg, i) => (
+                <div
+                  key={i}
+                  className={`flex ${msg.role === "user"
+                    ? "justify-end"
+                    : "justify-start"
                     }`}
                 >
-                  {type.toUpperCase()}
-                </button>
+                  <div
+                    className={`px-4 py-2 rounded-2xl max-w-xs shadow ${msg.role === "user"
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200"
+                      }`}
+                  >
+                    {msg.text}
+
+                    {msg.data?.result?.length > 0 && (
+                      <div className="mt-3">
+                        <ChartView data={{ ...msg.data, type: chartType }} />
+                      </div>
+                    )}
+                  </div>
+                </div>
               ))}
+
+              {loading && (
+                <p className="text-center text-gray-500">
+                  Thinking... 🤖
+                </p>
+              )}
             </div>
+          </ScrollArea>
+        </CardContent>
+      </Card>
+
+      {/* ❓ Ask Section */}
+      <Card className="p-4">
+        <CardContent className="space-y-2">
+          <Input
+            placeholder="Ask a question..."
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") askQuestion();
+            }}
+          />
+
+          <Button
+            onClick={askQuestion}
+            className="w-full bg-green-500 text-white"
+            disabled={loading}
+          >
+            Ask
+          </Button>
+          <div className="flex gap-2 mt-2">
+            {["bar", "line", "pie"].map((type) => (
+              <button
+                key={type}
+                onClick={() => setChartType(type)}
+                className={`px-3 py-1 rounded ${chartType === type
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 dark:bg-gray-700"
+                  }`}
+              >
+                {type.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+      {/* KPI */}
+      {values.length > 0 && (
+        <div className="grid grid-cols-3 gap-4">
+          <div className="p-4 bg-blue-100 dark:bg-blue-900 rounded">
+            <h3 className="text-sm">Total</h3>
+            <p className="text-xl font-bold">
+              {values.reduce((a, b) => a + b, 0)}
+            </p>
+          </div>
+
+          <div className="p-4 bg-green-100 dark:bg-green-900 rounded">
+            <h3 className="text-sm">Average</h3>
+            <p className="text-xl font-bold">
+              {(
+                values.reduce((a, b) => a + b, 0) /
+                values.length
+              ).toFixed(2)}
+            </p>
+          </div>
+
+          <div className="p-4 bg-purple-100 dark:bg-purple-900 rounded">
+            <h3 className="text-sm">Max</h3>
+            <p className="text-xl font-bold">
+              {Math.max(...values)}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* 📊 Insight */}
+      {data?.answer && (
+        <Card className="bg-gray-50">
+          <CardContent className="p-4">
+            <h2 className="text-lg font-semibold">Insight</h2>
+            <p className="text-gray-700">{data.answer}</p>
           </CardContent>
         </Card>
-        {/* KPI */}
-        {values.length > 0 && (
-          <div className="grid grid-cols-3 gap-4">
-            <div className="p-4 bg-blue-100 dark:bg-blue-900 rounded">
-              <h3 className="text-sm">Total</h3>
-              <p className="text-xl font-bold">
-                {values.reduce((a, b) => a + b, 0)}
-              </p>
-            </div>
+      )}
 
-            <div className="p-4 bg-green-100 dark:bg-green-900 rounded">
-              <h3 className="text-sm">Average</h3>
-              <p className="text-xl font-bold">
-                {(
-                  values.reduce((a, b) => a + b, 0) /
-                  values.length
-                ).toFixed(2)}
-              </p>
-            </div>
-
-            <div className="p-4 bg-purple-100 dark:bg-purple-900 rounded">
-              <h3 className="text-sm">Max</h3>
-              <p className="text-xl font-bold">
-                {Math.max(...values)}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* 📊 Insight */}
-        {data?.answer && (
-          <Card className="bg-gray-50">
-            <CardContent className="p-4">
-              <h2 className="text-lg font-semibold">Insight</h2>
-              <p className="text-gray-700">{data.answer}</p>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* 📥 Download */}
-        {data?.result?.length > 0 && (
-          <Button
-            onClick={downloadCSV}
-            className="w-full bg-blue-600 text-white"
-          >
-            Download Report 📄
-          </Button>
-        )}
-      </div>
+      {/* 📥 Download */}
+      {data?.result?.length > 0 && (
+        <Button
+          onClick={downloadCSV}
+          className="w-full bg-blue-600 text-white"
+        >
+          Download Report 📄
+        </Button>
+      )}
     </div>
     //   <div className="p-6 max-w-4xl mx-auto space-y-4">
     //     <h1 className="text-3xl font-bold text-center mb-4">AI Data Analyst</h1>
