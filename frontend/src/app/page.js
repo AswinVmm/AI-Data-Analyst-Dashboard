@@ -113,7 +113,7 @@ export default function Home() {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <h1 className="text-3xl font-bold text-center">📊 AI Data Analyst</h1>
       <button
         onClick={() => setDarkMode(!darkMode)}
@@ -144,109 +144,111 @@ export default function Home() {
       </Card>
 
       {/* 💬 Chat Section */}
-      <Card>
-        <CardContent>
-          <ScrollArea className="h-96 pr-4">
-            <div className="space-y-3">
-              {messages.map((msg, i) => (
-                <div
-                  key={i}
-                  className={`flex ${msg.role === "user"
-                    ? "justify-end"
-                    : "justify-start"
-                    }`}
-                >
+      <div className="md:col-span-2">
+        <Card>
+          <CardContent>
+            <ScrollArea className="h-96 pr-4">
+              <div className="space-y-3">
+                {messages.map((msg, i) => (
                   <div
-                    className={`px-4 py-2 rounded-2xl max-w-xs shadow ${msg.role === "user"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200"
+                    key={i}
+                    className={`flex ${msg.role === "user"
+                      ? "justify-end"
+                      : "justify-start"
                       }`}
                   >
-                    {msg.text}
+                    <div
+                      className={`px-4 py-2 rounded-2xl max-w-xs shadow ${msg.role === "user"
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200"
+                        }`}
+                    >
+                      {msg.text}
 
-                    {msg.data?.result?.length > 0 && (
-                      <div className="mt-3">
-                        <ChartView data={{ ...msg.data, type: chartType }} />
-                      </div>
-                    )}
+                      {msg.data?.result?.length > 0 && (
+                        <div className="mt-3">
+                          <ChartView data={{ ...msg.data, type: chartType }} />
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
+                ))}
+
+                {loading && (
+                  <p className="text-center text-gray-500">
+                    Thinking... 🤖
+                  </p>
+                )}
+              </div>
+            </ScrollArea>
+          </CardContent>
+        </Card>
+      </div>
+      <div className="space-y-4">
+        {/* ❓ Ask Section */}
+        <Card className="p-4">
+          <CardContent className="space-y-2">
+            <Input
+              placeholder="Ask a question..."
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") askQuestion();
+              }}
+            />
+
+            <Button
+              onClick={askQuestion}
+              className="w-full bg-green-500 text-white"
+              disabled={loading}
+            >
+              Ask
+            </Button>
+            <div className="flex gap-2 mt-2">
+              {["bar", "line", "pie"].map((type) => (
+                <button
+                  key={type}
+                  onClick={() => setChartType(type)}
+                  className={`px-3 py-1 rounded ${chartType === type
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 dark:bg-gray-700"
+                    }`}
+                >
+                  {type.toUpperCase()}
+                </button>
               ))}
-
-              {loading && (
-                <p className="text-center text-gray-500">
-                  Thinking... 🤖
-                </p>
-              )}
             </div>
-          </ScrollArea>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+        {/* KPI */}
+        {values.length > 0 && (
+          <div className="grid grid-cols-3 gap-4">
+            <div className="p-4 bg-blue-100 dark:bg-blue-900 rounded">
+              <h3 className="text-sm">Total</h3>
+              <p className="text-xl font-bold">
+                {values.reduce((a, b) => a + b, 0)}
+              </p>
+            </div>
 
-      {/* ❓ Ask Section */}
-      <Card className="p-4">
-        <CardContent className="space-y-2">
-          <Input
-            placeholder="Ask a question..."
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") askQuestion();
-            }}
-          />
+            <div className="p-4 bg-green-100 dark:bg-green-900 rounded">
+              <h3 className="text-sm">Average</h3>
+              <p className="text-xl font-bold">
+                {(
+                  values.reduce((a, b) => a + b, 0) /
+                  values.length
+                ).toFixed(2)}
+              </p>
+            </div>
 
-          <Button
-            onClick={askQuestion}
-            className="w-full bg-green-500 text-white"
-            disabled={loading}
-          >
-            Ask
-          </Button>
-          <div className="flex gap-2 mt-2">
-            {["bar", "line", "pie"].map((type) => (
-              <button
-                key={type}
-                onClick={() => setChartType(type)}
-                className={`px-3 py-1 rounded ${chartType === type
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 dark:bg-gray-700"
-                  }`}
-              >
-                {type.toUpperCase()}
-              </button>
-            ))}
+            <div className="p-4 bg-purple-100 dark:bg-purple-900 rounded">
+              <h3 className="text-sm">Max</h3>
+              <p className="text-xl font-bold">
+                {Math.max(...values)}
+              </p>
+            </div>
           </div>
-        </CardContent>
-      </Card>
-      {/* KPI */}
-      {values.length > 0 && (
-        <div className="grid grid-cols-3 gap-4">
-          <div className="p-4 bg-blue-100 dark:bg-blue-900 rounded">
-            <h3 className="text-sm">Total</h3>
-            <p className="text-xl font-bold">
-              {values.reduce((a, b) => a + b, 0)}
-            </p>
-          </div>
-
-          <div className="p-4 bg-green-100 dark:bg-green-900 rounded">
-            <h3 className="text-sm">Average</h3>
-            <p className="text-xl font-bold">
-              {(
-                values.reduce((a, b) => a + b, 0) /
-                values.length
-              ).toFixed(2)}
-            </p>
-          </div>
-
-          <div className="p-4 bg-purple-100 dark:bg-purple-900 rounded">
-            <h3 className="text-sm">Max</h3>
-            <p className="text-xl font-bold">
-              {Math.max(...values)}
-            </p>
-          </div>
-        </div>
-      )}
-
+        )}
+      </div>
       {/* 📊 Insight */}
       {data?.answer && (
         <Card className="bg-gray-50">
