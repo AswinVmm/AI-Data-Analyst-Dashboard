@@ -32,7 +32,7 @@ export default function ChartView({ data }) {
 
     if (type === "bar") {
         return (
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={400}>
                 <BarChart data={data.result}>
                     <XAxis dataKey="name" stroke="#555" interval={0} angle={-35}
                         textAnchor="end" height={80} />

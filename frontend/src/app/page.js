@@ -117,7 +117,7 @@ export default function Home() {
       <h1 className="text-3xl font-bold text-center">📊 AI Data Analyst</h1>
       <button
         onClick={() => setDarkMode(!darkMode)}
-        className="px-3 py-1 rounded bg-gray-800 text-white dark:bg-white dark:text-black"
+        className="px-3 py-1 rounded w-max h-10 bg-gray-800 text-white dark:bg-white dark:text-black"
       >
         {darkMode ? "☀ Light" : "🌙 Dark"}
       </button>
