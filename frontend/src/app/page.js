@@ -113,7 +113,7 @@ export default function Home() {
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-4">
+    <div className="p-6 max-w-7xl mx-auto space-y-4">
       <h1 className="text-3xl font-bold text-center">📊 AI Data Analyst</h1>
       <button
         onClick={() => setDarkMode(!darkMode)}
