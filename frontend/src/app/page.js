@@ -31,6 +31,14 @@ export default function Home() {
     if (chat) chat.scrollTop = chat.scrollHeight;
   }, [messages]);
 
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [darkMode]);
+
   const askQuestion = async () => {
     setLoading(true);
 
