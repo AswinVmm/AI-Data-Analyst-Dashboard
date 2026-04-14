@@ -1,9 +1,9 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, LineChart, Line, PieChart, Pie, Cell, Legend } from "recharts";
 import { ResponsiveContainer } from "recharts";
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AA336A"];
-const type = data?.type || "bar";
 
 export default function ChartView({ data }) {
+    const type = data?.type || "bar";
     if (!data?.result || data.result.length === 0) {
         return <p>No data to display</p>;
     }
