@@ -113,76 +113,116 @@ export default function Home() {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <h1 className="text-3xl font-bold text-center">📊 AI Data Analyst</h1>
-      <button
-        onClick={() => setDarkMode(!darkMode)}
-        className="px-3 py-1 rounded w-max h-10 bg-gray-800 text-white dark:bg-white dark:text-black"
-      >
-        {darkMode ? "☀ Light" : "🌙 Dark"}
-      </button>
+    <div className="p-6 w-full max-w-[1700px] mx-auto space-y-4">
 
-      {/* 📁 Upload Section */}
-      <Card className="p-4">
-        <CardContent className="space-y-3">
-          <Input
-            type="file"
-            onChange={(e) => setFile(e.target.files[0])}
-          />
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">📊 AI Data Analyst</h1>
 
-          <div className="flex gap-2">
-            <Button onClick={uploadFile}>Upload</Button>
+        <button
+          onClick={() => setDarkMode(!darkMode)}
+          className="px-3 py-1 rounded bg-gray-800 text-white dark:bg-white dark:text-black"
+        >
+          {darkMode ? "☀ Light" : "🌙 Dark"}
+        </button>
+      </div>
 
-            <Button
-              onClick={analyzeData}
-              className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white"
-            >
-              Analyze 📊
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      {/* GRID */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
 
-      {/* 💬 Chat Section */}
-      <div className="md:col-span-2">
-        <Card>
-          <CardContent>
-            <ScrollArea className="h-96 pr-4">
-              <div className="space-y-3">
-                {messages.map((msg, i) => (
-                  <div
-                    key={i}
-                    className={`flex ${msg.role === "user"
-                      ? "justify-end"
-                      : "justify-start"
-                      }`}
-                  >
-                    <div
-                      className={`px-4 py-2 rounded-2xl max-w-xs shadow ${msg.role === "user"
-                        ? "bg-blue-500 text-white"
-                        : "bg-gray-200"
-                        }`}
-                    >
-                      {msg.text}
+        {/* 📁 Upload Section */}
+        <Card className="p-2">
+          <CardContent className="space-y-2">
 
-                      {msg.data?.result?.length > 0 && (
-                        <div className="mt-3">
-                          <ChartView data={{ ...msg.data, type: chartType }} />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
+            <div className="flex items-center gap-3">
 
-                {loading && (
-                  <p className="text-center text-gray-500">
-                    Thinking... 🤖
-                  </p>
-                )}
-              </div>
-            </ScrollArea>
+              {/* Hidden input */}
+              <input
+                type="file"
+                id="fileUpload"
+                className="hidden"
+                onChange={(e) => setFile(e.target.files[0])}
+              />
+
+              {/* Custom button */}
+              <label
+                htmlFor="fileUpload"
+                className="cursor-pointer px-4 py-2 mt-3 bg-gray-200 dark:bg-gray-700 rounded"
+              >
+                Choose File 📁
+              </label>
+
+              {/* File name display */}
+              <span className="text-sm text-gray-600 dark:text-gray-300">
+                {file ? `${file.name} (${(file.size / 1024).toFixed(1)} KB)` : "No file selected"}
+              </span>
+
+            </div>
+
+            <div className="flex gap-2 mt-3">
+              <Button onClick={uploadFile}>Upload</Button>
+
+              <Button
+                onClick={analyzeData}
+                className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white"
+              >
+                Analyze
+              </Button>
+            </div>
+            <div className="mt-4 mb-3">
+              {/* 📥 Download */}
+              {data?.result?.length > 0 && (
+                <Button
+                  onClick={downloadCSV}
+                  className="w-80 bg-blue-600 text-white"
+                >
+                  Download Report 📄
+                </Button>
+              )}
+            </div>
           </CardContent>
         </Card>
+
+        {/* 💬 Chat Section */}
+        <div className="md:col-span-2">
+          <Card>
+            <CardContent>
+              <ScrollArea className="h-[calc(100vh-180px)] pr-4">
+                <div className="space-y-3">
+                  {messages.map((msg, i) => (
+                    <div
+                      key={i}
+                      className={`flex ${msg.role === "user"
+                        ? "justify-end"
+                        : "justify-start"
+                        }`}
+                    >
+                      <div
+                        className={`px-4 py-2 rounded-2xl max-w-2xl w-full shadow ${msg.role === "user"
+                          ? "bg-blue-500 text-white"
+                          : "bg-gray-200"
+                          }`}
+                      >
+                        {msg.text}
+
+                        {msg.data?.result?.length > 0 && (
+                          <div className="mt-3 w-full">
+                            <ChartView data={{ ...msg.data, type: chartType }} />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+
+                  {loading && (
+                    <p className="text-center text-gray-500">
+                      Thinking... 🤖
+                    </p>
+                  )}
+                </div>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </div>
       </div>
       <div className="space-y-4">
         {/* ❓ Ask Section */}
@@ -199,7 +239,7 @@ export default function Home() {
 
             <Button
               onClick={askQuestion}
-              className="w-full bg-green-500 text-white"
+              className="w-60 bg-green-500 text-white"
               disabled={loading}
             >
               Ask
@@ -258,84 +298,6 @@ export default function Home() {
           </CardContent>
         </Card>
       )}
-
-      {/* 📥 Download */}
-      {data?.result?.length > 0 && (
-        <Button
-          onClick={downloadCSV}
-          className="w-full bg-blue-600 text-white"
-        >
-          Download Report 📄
-        </Button>
-      )}
     </div>
-    //   <div className="p-6 max-w-4xl mx-auto space-y-4">
-    //     <h1 className="text-3xl font-bold text-center mb-4">AI Data Analyst</h1>
-
-    //     <div className="chat-box border p-4 h-96 overflow-y-auto bg-gray-50 rounded">
-    //       {messages.map((msg, i) => (
-    //         <div key={i} className={`mb-3 ${msg.role === "user" ? "text-right" : "text-left"}`}>
-    //           <div className={`inline-block p-2 rounded ${msg.role === "user" ? "bg-blue-500 text-white" : "bg-gray-300"
-    //             }`}>
-    //             {msg.text}
-    //           </div>
-
-    //           {msg.data?.result?.length > 0 && (
-    //             <div className="mt-2">
-    //               <ChartView data={msg.data} />
-    //             </div>
-    //           )}
-    //         </div>
-    //       ))}
-
-    //       {loading && <p>Thinking... 🤖</p>}
-    //     </div>
-
-    //     {/* <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-    //     <button onClick={uploadFile}>Upload</button> */}
-
-    //     <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-
-    //     <div className="flex gap-2 mt-2">
-    //       <button
-    //         onClick={uploadFile}
-    //         className="px-4 py-2 bg-blue-500 text-white rounded"
-    //       >
-    //         Upload
-    //       </button>
-
-    //       <button
-    //         onClick={analyzeData}
-    //         className="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded shadow"
-    //       >
-    //         Analyze
-    //       </button>
-    //     </div>
-
-    //     <input
-    //       className="border p-2 w-full mt-4"
-    //       // type="text"
-    //       placeholder="Ask a question..."
-    //       value={question}
-    //       onChange={(e) => setQuestion(e.target.value)}
-    //     />
-    //     <button onClick={askQuestion} className="mt-2 px-4 py-2 bg-green-500 text-white rounded">
-    //       Ask
-    //     </button>
-    //     {data?.answer && (
-    //       <div className="p-4 bg-gray-100 rounded mt-4">
-    //         <h2 className="text-xl font-bold">Insight</h2>
-    //         <p>{data.answer}</p>
-    //       </div>
-    //     )}
-    //     {data?.result?.length > 0 && (
-    //       <button
-    //         onClick={downloadCSV}
-    //         className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
-    //       >
-    //         Download Your Report
-    //       </button>
-    //     )}
-    //   </div>
   );
 }
